@@ -125,6 +125,7 @@ stage('Deploy') {
 
             ansiblePlaybook colorized: true,
             credentialsId: 'ssh-jenkins',
+            hostKeyChecking: false,
             limit: "${HOST_PROVISION}",
             installation: 'ansible',
             inventory: 'provision/inventory.ini',
