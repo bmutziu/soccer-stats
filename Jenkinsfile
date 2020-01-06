@@ -3,7 +3,7 @@
 properties([
   parameters([
     booleanParam(defaultValue: true, description: 'Run the entire stack for lab purpose only', name: 'FULL_BUILD'),
-    string(defaultValue: 'app', description: 'Server to run ansible based on provision/inventory.ini', name: 'HOST_PROVISION', trim: false)
+    string(defaultValue: 'app.local', description: 'Server to run ansible based on provision/inventory.ini', name: 'HOST_PROVISION', trim: false)
     ])
 ])
 
