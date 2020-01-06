@@ -1,5 +1,13 @@
 #!groovy​
 
+properties([
+  parameters([
+    booleanParam(defaultValue: true, description: 'Run the entire stack for lab purpose only', name: 'FULL_BUILD'),
+    string(defaultValue: 'app', description: 'Server to run ansible based on provision/inventory.ini', name: 'HOST_PROVISION', trim: false)
+    ])
+])
+
+
 // FULL_BUILD -> true/false build parameter to define if we need to run the entire stack for lab purpose only
 final FULL_BUILD = params.FULL_BUILD
 // HOST_PROVISION -> server to run ansible based on provision/inventory.ini
@@ -23,7 +31,7 @@ stage('Build') {
 }
 
 if(FULL_BUILD) {
-    stage('Unit Tests') {   
+    stage('Unit Tests') {
         node {
             withEnv(["PATH+MAVEN=${tool 'm3'}/bin"]) {
                 sh "mvn -B clean test"
@@ -81,14 +89,14 @@ if(FULL_BUILD) {
             nexusArtifactUploader artifacts: [
                     [artifactId: "${pom.artifactId}", classifier: '', file: "target/${file}.war", type: 'war'],
                     [artifactId: "${pom.artifactId}", classifier: '', file: "${file}.pom", type: 'pom']
-                ], 
-                credentialsId: 'nexus', 
-                groupId: "${pom.groupId}", 
-                nexusUrl: NEXUS_URL, 
-                nexusVersion: 'nexus3', 
-                protocol: 'http', 
-                repository: 'ansible-meetup', 
-                version: "${pom.version}"        
+                ],
+                credentialsId: 'nexus',
+                groupId: "${pom.groupId}",
+                nexusUrl: NEXUS_URL,
+                nexusVersion: 'nexus3',
+                protocol: 'http',
+                repository: 'ansible-meetup',
+                version: "${pom.version}"
         }
     }
 }
@@ -97,7 +105,7 @@ if(FULL_BUILD) {
 stage('Deploy') {
     node {
         def pom = readMavenPom file: "pom.xml"
-        def repoPath =  "${pom.groupId}".replace(".", "/") + 
+        def repoPath =  "${pom.groupId}".replace(".", "/") +
                         "/${pom.artifactId}"
 
         def version = pom.version
@@ -113,14 +121,14 @@ stage('Deploy') {
             echo "The URL is ${env.ARTIFACT_URL} and the app name is ${env.APP_NAME}"
 
             // install galaxy roles
-            sh "ansible-galaxy install -vvv -r provision/requirements.yml -p provision/roles/"        
+            sh "ansible-galaxy install -vvv -r provision/requirements.yml -p provision/roles/"
 
-            ansiblePlaybook colorized: true, 
+            ansiblePlaybook colorized: true,
             credentialsId: 'ssh-jenkins',
             limit: "${HOST_PROVISION}",
             installation: 'ansible',
-            inventory: 'provision/inventory.ini', 
-            playbook: 'provision/playbook.yml', 
+            inventory: 'provision/inventory.ini',
+            playbook: 'provision/playbook.yml',
             sudo: true,
             sudoUser: 'jenkins'
         }
