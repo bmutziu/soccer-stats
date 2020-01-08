@@ -2,6 +2,8 @@
 - name: Install Roles from Galaxy
   hosts: localhost
   connection: local
+  vars:
+    local_user: root
   become_user: "{{ local_user | default('awx') }}"
   become: yes
   tasks:
