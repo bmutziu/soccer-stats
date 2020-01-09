@@ -113,7 +113,7 @@ stage('Deploy') {
         def artifactUrl = "http://${NEXUS_URL}/repository/${NEXUS_REPO}/${repoPath}/${version}/${pom.artifactId}-${version}.war"
         def hostLimit = (HOST_PROVISION == "all" || HOST_PROVISION == null) ? "" : HOST_PROVISION
 
-        echo "The URL is ${artifactUrl} and the app name is ${pom.artifactId}."
+        echo "The URL is ${artifactUrl} and the app name is ${pom.artifactId}"
 
         //you must specify your own ids
         ansibleTower(
